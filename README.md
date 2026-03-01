@@ -142,7 +142,9 @@ Above is a function to find out sentiment scores and sentiments of each daily jo
    
 
 ### Model Training
-Used pre-existing 
+Referencing video of creating a Korean Sentiment Analysis Model, I created a pre-trained sentiment analysis model. I used Naver Movie Review Data as a data to train the model. 
+- Train Data : https://raw.githubusercontent.com/e9t/nsmc/master/ratings_train.txt
+- Test Data : https://raw.githubusercontent.com/e9t/nsmc/master/ratings_test.txt
 
 
 ## Results 
@@ -151,7 +153,8 @@ Used pre-existing
 ## Analysis 
 
 
-## Limitations 
+## Limitations - Hierarchical Constraint
+Hierarchy system exists in military, even for enlisted airman. The hardship and adversity of work and daily life differs for each level: private, private first class, corporal, and sergeant. The daily reflection sentiment analysis project was started when I was sergeant with only 6 months left until the end of my service. If this project was started earlier, it could have allowed a new point of view on analysis: patterns in sentiment analysis score for each level. Yet, the environment I was placed limited it. The work intensity was way more severe than the intensity I feel as a sergeant back when I was in private first class and corporal and it was impossible to use computer as superiors had priority. 
 
 ## Reference
 https://www.youtube.com/watch?v=7GUoDHxN5NM
