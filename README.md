@@ -1,26 +1,24 @@
-# Daily Reflection Sentiment Analysis Project 
+# **Daily Reflection Sentiment Analysis Project**
 
-## Project Objective 
-The purpose of this project is to examine how sentiment score of my daily journal varies with different workload and duty patterns over time.
+## **Project Objective** 
+The purpose of this project is to examine how the sentiment score of my daily journal varies with different workload and duty patterns over time. By leveraging Natural Language Processing (NLP), I aim to quantify subjective meotional data to find correlations with objective work metrics.
 
-### Methods Used 
-- Text Mining
-- Sentiment Analysis
+### **Methods & Technologies**
+- Language: Python
 
-### Technologies / Modules
-- Python
-    - KoNLPy
-    - re
-    - numpy
-    - pandas
+- Core ML Frameworks: PyTorch, Hugging Face Transformers (KLUE-BERT)
 
-## Project Description
-I was taught to gain habit of making a checklist of what I should do tomorrow in military. I initially considered this as one of the remaining absurdities in military. Yet, I later realized this as a important habit I can carry beyond military to record my thoughts and emotions each day. 
+- Legacy Frameworks: Keras, Tensorflow, **KoNLPY (Okt)**
 
-Not only limited to daily reflection, I considered this journal as personal text data. Inspired from the text mining concepts learned in data science online course during the service, I decided to conduct a sentiment analysis of my personal journal data and find whether there is a relationship in sentiment score and my workload and duty status. 
+- Data Engineering: Zapier (Data Transfer Automation), Google Sheets API, Pandas, NumPy
 
-## Data Collection
-Each daily reflection journal was recorded through **Notion** database with each journal being an entry in the database. Each journal is consist of two numerical data (name, hours of work),  three categorical data (duty status, work intensity, and overall mood), and text data (reflection). 
+
+## **Project Description**
+During my military service, I developed a habit of recording my thoughts and emotions daily. Inspired by text mining concepts from a data science course I took during the service, I decided to treat this journal as a personal dataset. My goal is to determine if a measurable relationship exists between my sneimtne scores, work intensity, and duty status. 
+
+
+## **Data Collection**
+Each daily reflction journal was recorded through **Notion** database. Each journal is consist of two numerical data _(name, hours of work)_,  three categorical data _(duty status, work intensity, and overall mood)_, and text data _(reflection)_. 
 |Name|Today's Status|Hours of Work|Work Intensity|Overall Mood|Reflection|
 |:---|:-------------|:------------|:-------------|:-----------|:---------|
 |1/24/2026|On Duty|0|0|9|...|
@@ -33,129 +31,54 @@ Each daily reflection journal was recorded through **Notion** database with each
 - **Overall Mood** : represents how I felt overall from 0 - 10 with 0 being poor and 10 being great
 - **Reflection** : text written in Korean about my day 
 
-### Data Export Process
-Considering that the data was recorded in Notion, had to export the database into google sheets or Excel in csv form. To simplify the process, I utilized an AI platform **Zapier**, automating exportation of Notion database to **google sheets** when every modification was made in Notion database.  
+### **Data Exportation**
+The data recorded in **Notion** database is automatically exported to **Google Sheets** via **Zapier**. The automatic exportation is made when there was an update/modification in Notion database. 
 
-## Data Pre-Processing
-### Data Cleaning
-1) **Importing Data from Google Sheets**
-   ```
-   from google.colab import auth
-   auth.authenticate_user()
+## **The Evolution of Model Architecture**
+### Phase 1: LSTM with KoNLPy (Initial Baseline)
+Originally, I built a **LSTM** using Keras. This model utilized the **Okt** morphological analyzer from the **KoNLPy** library for tokenization. While this provided a functional baseline, it faced challenges:
 
-   import gspread
-   from google.auth import default
-  
-   creds, _ = default()
-  
-   gc = gspread.Client(auth=creds)
-  
-   spreadsheet =   gc.open_by_url('https://docs.google.com/spreadsheets/d/1DrDCLitpXZyJajcWYcMNcJCZU4Xa0aE_gj4sfXzl6x4/edit?gid=0#gid=0')
-  
-   worksheet = spreadsheet.worksheet('data')
-   ``` 
-2) **Changing the Imported Spreadsheet into Dataframe**
-   ```
-   raw = worksheet.get_all_records()
+- **Static Embeddings**: it struggled with the nuanced, contextual nature of personal reflections
 
-   headers = raw[0]
-   rows = raw[1:]
+- **Preprocessing Complexity**: required manual stopward removal and sequence padding
 
-   df = pd.DataFrame(rows, columns=headers)
-   ```
-3) **Changing Column Names & Fixing Data Types**
-   ```
-   # Shortening Column Names
-   df = df.rename(columns={
-    "Work Intensity (0 - Easy / 10 - Intense)": "Work Intensity",
-    "Overall Mood (0 - Poor / 10 - Great)": "Overall Mood"
-   })
+### Phase 2: KLUE-BERT (current model)
+To improve performance, I migrated the pipeline to **KLUE-BERT** (Korean Language Understanding Evaluation - BERT)
 
-   # Fixing Data Types
-   df["Hours of Work"] = pd.to_numeric(df["Hours of Work"], errors="coerce").fillna(0)
-   df["Work Intensity"] = pd.to_numeric(df["Work Intensity"], errors="coerce").fillna(0)
-   df["Overall Mood"] = pd.to_numeric(df["Overall Mood"], errors="coerce").fillna(0)
-   ```
-   Initially, column names of categorical data included a scale for a reference. Yet, the reference was unnecessary in dataframe.
+- **Why BERT?**: unlike LSTM that processes text in one direction, BERT's bidirectional attention mechanism understands the context of a word based on its surroundings
 
-   Also, the fixed the data type of 'Hours of Work', 'Work Intensity', and 'Overall Mood' to numeric.
+- **Transfer Learning**: KLUE-BERT is pre-trained on massive Korean corpora, allowing it to perform accurately even wit my relatively small personal dataset
 
-4) **Adding Columns for Sentiment Score and Sentiment**
-   ```
-   sentiment_result =[]
+- **Subword Tokenization**: replaced 'Okt' with a subword tokenizer, effectively handling 'Out-of-Vocabulary' words and reducing the need for manual stopword filtering
 
-   for i in range(len(df)):
-     sentiment_result.append(sentiment_predict_paragraph(df['Reflection'][i]))
+## **Technical Implementation (KLUE-BERT)**
 
-   sentiment_score = [item[0] for item in sentiment_result]
-   sentiment = [item[1] for item in sentiment_result]
+### Model Validation: Ground Truth Correlation
+To ensure the model's sentiment score was accurate, I performed a **Pearson Correlation** analysis against my manually recorded 'Overall Mood'. This validation step ensures that the mode;'s view of my day aligns with my evaluation of my mood. 
 
-   df['Sentiment Score'] = sentiment_score
-   df['sentiment'] = sentiment
-   ```
+### Sentiment Polarity Transformation
+To make the data more interpretable for visualization, I transformed the Softmax probability output [0,1] to a **Centered Polarity Score** [-1,1]. 
 
-### Data Processing
-```
-def sentiment_predict_paragraph(paragraph):
-  if not isinstance(paragraph, str) or len(paragraph.strip()) == 0:
-    return None, "N/A"
+$$Score_{Polarity} = (Score_{Softmax} - 0.5) \times 2$$
 
-  split_result = re.split('[.!?]', paragraph)
-  sentences = [s.strip() for s in split_result if len(s.strip()) > 0]
+- -1 : Strong Negative Sentiment
+- 0 : Neutral
+- 1 : Strong Positive Sentiment
 
-  if len(sentences) == 0:
-    return None, "N/A"
-
-  scores = []
-  for sentence in sentences:
-    try:
-      new_token = [word for word in okt.morphs(sentence) if word not in stopwords]
-      if len(new_token) == 0:
-        continue
-      new_sequences = tokenizer.texts_to_sequences([new_token])
-      new_pad = pad_sequences(new_sequences, maxlen=max_len)
-      score = float(model.predict(new_pad, verbose=0))
-      scores.append(score)
-    except Exception as e:
-      continue
-
-  if len(scores) == 0:
-    return None, "N/A"
-
-  avg_score = sum(scores) / len(scores)
-  sentiment = "긍정" if avg_score > 0.5 else "부정"
-  return round(avg_score * 100, 2), sentiment
-```
-Above is a function to find out sentiment scores and sentiments of each daily journal. 
-
-1) **Splitting by sentences**
-   ```
-   split_result = re.split('[.!?]', paragraph)
-   sentences = [s.strip() for s in split_result if len(s.strip()) > 0]
-   ```
-
-2) **Tokenization & Stopwords Removal**
-   ```
-   # stopwords = ['의', '가', '이', '은', '들', '는', '좀', '잘', '강', '과', '도', '를', '으로', '자', '에', '와', '한', '하다'] 
-   new_token = [word for word in okt.morphs(sentence) if word not in stopwords]
-   ```
-   
-
-### Model Training
-Referencing video of creating a Korean Sentiment Analysis Model, I created a pre-trained sentiment analysis model. I used Naver Movie Review Data as a data to train the model. 
-- Train Data : https://raw.githubusercontent.com/e9t/nsmc/master/ratings_train.txt
-- Test Data : https://raw.githubusercontent.com/e9t/nsmc/master/ratings_test.txt
+## **Results & Analysis** 
 
 
-## Results 
+
+## **Limitations & Challanges**
+- **Hierarchical Constraints**: The hardship and adversity of work and daily life differs for each level: _private_, _private first class_, _corporal_, and _sergeant_. The daily reflection sentiment analysis project started when I was a sergeant with only 6 months left until the end of the service. If this project started earlier, it could have allowed a new point of view on analysis: patters in sentiment analysis score for each level. 
+
+- **Domain Gap**: The model was fin-tuned on the **Naver Movie Sentiment Corpus (NSMC)**. While being powerful, movie reviews and personal journals have different linguistic structures, which I addressed by utilizing the contextual strengths of BERT. 
 
 
-## Analysis 
+## **References**
+- [KLUE-BERT](https://www.youtube.com/watch?v=7GUoDHxN5NM)
 
+- [NSMC Dataset](https://github.com/e9t/nsmc)
 
-## Limitations - Hierarchical Constraint
-Hierarchy system exists in military, even for enlisted airman. The hardship and adversity of work and daily life differs for each level: private, private first class, corporal, and sergeant. The daily reflection sentiment analysis project was started when I was sergeant with only 6 months left until the end of my service. If this project was started earlier, it could have allowed a new point of view on analysis: patterns in sentiment analysis score for each level. Yet, the environment I was placed limited it. The work intensity was way more severe than the intensity I feel as a sergeant back when I was in private first class and corporal and it was impossible to use computer as superiors had priority. 
-
-## Reference
-https://www.youtube.com/watch?v=7GUoDHxN5NM
+- https://www.youtube.com/watch?v=7GUoDHxN5NM
 
