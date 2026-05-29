@@ -22,20 +22,21 @@ Developing on top of the experience from military service, which I developed a h
 
 ## **Data Collection**
 Each daily reflction journal was recorded through **Notion** database. Each journal is consist of two numerical data _(name, hours of work)_,  three categorical data _(duty status, work intensity, and overall mood)_, and text data _(reflection)_. 
-|Name|Today's Status|Hours of Work|Work Intensity|Overall Mood|Reflection|
-|:---|:-------------|:------------|:-------------|:-----------|:---------|
-|1/24/2026|On Duty|0|0|9|...|
-|2/25/2026|On Duty|2.5|2|6|...|
-|...|...|...|...|...|...|
+|Name|Today's Status|Hours of Work|Work Intensity|Overall Mood|Reflection|Exportation|
+|:---|:-------------|:------------|:-------------|:-----------|:---------|:----------| 
+|1/24/2026|On Duty|0|0|9|...|True|
+|2/25/2026|On Duty|2.5|2|6|...|True|
+|...|...|...|...|...|...|...|
 - **Name** : date of daily reflection
 - **Today's Status** : represents today's status (military leave / temporary leave / on duty)
 - **Hours of Work** : represents how many hours I work in corresponding date
 - **Work Intensity** : represents how hard the day was from 0 - 10 with 0 being easy and 10 being intense
 - **Overall Mood** : represents how I felt overall from 0 - 10 with 0 being poor and 10 being great
-- **Reflection** : text written in Korean about my day 
+- **Reflection** : text written in Korean about my day
+- **Exportaion** : a checkbox whether the daily reflection can be exported from Notion to Google Sheets
 
 ### **Data Exportation**
-The data recorded in **Notion** database is automatically exported to **Google Sheets** via **Zapier**. The automatic exportation is made when there was an update/modification in Notion database. 
+The data recorded in **Notion** database is automatically exported to **Google Sheets** via **Zapier**. The automatic exportation is made when the value of 'Exportation' property is true in Notion database. 
 
 ## **The Evolution of Model Architecture**
 ### Phase 1: LSTM with KoNLPy (Initial Baseline)
