@@ -6,7 +6,7 @@ The purpose of this project is to examine how the sentiment score of my daily jo
 ### **Methods & Technologies**
 - Language: Python
 
-- Core ML Frameworks: PyTorch, Hugging Face Transformers (KLUE-BERT)
+- Core ML Frameworks: PyTorch, Hugging Face Transformers (**KLUE-BERT**)
 
 - Legacy Frameworks: Keras, Tensorflow, **KoNLPY (Okt)**
 
@@ -14,7 +14,10 @@ The purpose of this project is to examine how the sentiment score of my daily jo
 
 
 ## **Project Description**
-During my military service, I developed a habit of recording my thoughts and emotions daily. Inspired by text mining concepts from a data science course I took during the service, I decided to treat this journal as a personal dataset. My goal is to determine if a measurable relationship exists between my sneimtne scores, work intensity, and duty status. 
+In the era led by Artificial Intelligence (AI), I believe that the irreplaceable, unique value of humanity lies in 'emotions.' And I am convinced that the medium which best projects this unique human value is 'language.' I consider that keeping a diary, where we express and record our emotions through our own languages, is not merely a form of writing, but rather essential 'data' in an AI-centric era. 
+
+Developing on top of the experience from military service, which I developed a habit of recording my thoughts and emotions daily, I decided to treat my own daily journal as a personal dataset. Utilizing text mining concepts from data science course I took during the service and data science skills learned in my freshman year at UCSD, I look forward to determine if a measurable relationship exists between my daily journal sentiment scores, work intensity, and duty status. 
+
 
 
 ## **Data Collection**
