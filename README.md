@@ -58,7 +58,7 @@ To improve performance, I migrated the pipeline to **KLUE-BERT** (Korean Languag
 ## **Technical Implementation (KLUE-BERT)**
 
 ### Model Validation: Ground Truth Correlation
-To ensure the model's sentiment score was accurate, I performed a **Pearson Correlation** analysis against my manually recorded 'Overall Mood'. This validation step ensures that the mode;'s view of my day aligns with my evaluation of my mood. 
+To ensure the model's sentiment score was accurate, I performed a **Pearson Correlation** analysis against my manually recorded 'Overall Mood'. This validation step ensures that the mode's view of my day aligns with my evaluation of my mood. 
 
 ### Sentiment Polarity Transformation
 To make the data more interpretable for visualization, I transformed the Softmax probability output [0,1] to a **Centered Polarity Score** [-1,1]. 
