@@ -69,8 +69,22 @@ $$Score_{Polarity} = (Score_{Softmax} - 0.5) \times 2$$
 - 0 : Neutral
 - 1 : Strong Positive Sentiment
 
-## **Results & Analysis** 
-... 
+## **Results** 
+<img width="987" height="589" alt="Screenshot 2026-06-02 at 10 15 28 PM" src="https://github.com/user-attachments/assets/8b1f0ebc-cae9-4898-8f72-f4deed43615a" />
+Figure 1: Mood vs Sentiment Score Discrepancy 
+
+#### 
+<img width="784" height="588" alt="Screenshot 2026-06-02 at 10 15 45 PM" src="https://github.com/user-attachments/assets/5487db6a-6699-472f-b3c6-f7741a4fd20c" />
+
+Figure 2: Hours of Work vs Sentiment Score
+
+#### 
+<img width="786" height="589" alt="Screenshot 2026-06-02 at 10 15 58 PM" src="https://github.com/user-attachments/assets/536fed5b-a241-4070-9c74-a60e71a71a2e" />
+
+Figure 3: Work Intensity vs Sentiment Score
+
+## **Analaysis**
+...
 
 
 ## **Limitations & Challanges**
