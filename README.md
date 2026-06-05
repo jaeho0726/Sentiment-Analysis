@@ -70,18 +70,24 @@ $$Score_{Polarity} = (Score_{Softmax} - 0.5) \times 2$$
 - 1 : Strong Positive Sentiment
 
 ## **Results** 
-<img width="987" height="589" alt="Screenshot 2026-06-02 at 10 15 28 PM" src="https://github.com/user-attachments/assets/8b1f0ebc-cae9-4898-8f72-f4deed43615a" />
+<img width="987" height="587" alt="Screenshot 2026-06-05 at 11 23 24 PM" src="https://github.com/user-attachments/assets/6a059c5e-caf6-47ed-a5f4-f2430fde88bf" />
 Figure 1: Mood vs Sentiment Score Discrepancy 
 
 #### 
-<img width="784" height="588" alt="Screenshot 2026-06-02 at 10 15 45 PM" src="https://github.com/user-attachments/assets/5487db6a-6699-472f-b3c6-f7741a4fd20c" />
+<img width="788" height="589" alt="Screenshot 2026-06-05 at 11 23 38 PM" src="https://github.com/user-attachments/assets/af53ffef-8bd6-4a5f-9728-02a2b00cd656" />
 
-Figure 2: Hours of Work vs Sentiment Score
+Figure 2: Hours of Work vs Sentiment Score (Exluding Days with 0 Work Hours)
+
+
+####
+<img width="787" height="585" alt="Screenshot 2026-06-05 at 11 29 47 PM" src="https://github.com/user-attachments/assets/503ecd4d-fc7c-4094-8c72-de2d760b7a0d" />
+
+Figure 3: Distribution of Sentiment Score of Days with 0 Work Hours
 
 #### 
-<img width="786" height="589" alt="Screenshot 2026-06-02 at 10 15 58 PM" src="https://github.com/user-attachments/assets/536fed5b-a241-4070-9c74-a60e71a71a2e" />
+<img width="788" height="588" alt="Screenshot 2026-06-05 at 11 24 07 PM" src="https://github.com/user-attachments/assets/4ac71012-5de9-465d-af46-6ddc9869ea5c" />
 
-Figure 3: Work Intensity vs Sentiment Score
+Figure 4: Work Intensity vs Sentiment Score
 
 ## **Analaysis**
 ...
