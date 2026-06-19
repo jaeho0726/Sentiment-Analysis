@@ -6,7 +6,7 @@ The purpose of this project is to examine how the sentiment score of my daily jo
 ### **Methods & Technologies**
 - Language: Python
 
-- Core ML Frameworks: PyTorch, Hugging Face Transformers (**KLUE-BERT**)
+- Core ML Frameworks: Hugging Face Transformers (**KLUE-BERT**)
 
 - Legacy Frameworks: Keras, Tensorflow, **KoNLPY (Okt)**
 
