@@ -98,9 +98,6 @@ This distribution provides a baseline of my "rest day" state. While the mass cen
 
 Similar to Figure 2, the distribution across work intensity levels (0-10) demonstrates substantial overlap. High intensity does not automatically trigger strongly negative sentiment score. This reinforces that how I contextually frame the difficulty of a challenging day in my daily journal matters far more than the objective difficulty rating itself.
 
-## **Analaysis**
-...
-
 
 ## **Limitations & Challanges**
 - **Hierarchical Constraints**: The hardship and adversity of work and daily life differs for each level: _private_, _private first class_, _corporal_, and _sergeant_. The daily reflection sentiment analysis project started when I was a sergeant with only 6 months left until the end of the service. If this project started earlier, it could have allowed a new point of view on analysis: patters in sentiment analysis score for each level. 
