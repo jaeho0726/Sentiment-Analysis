@@ -1,7 +1,7 @@
 # **Daily Reflection Sentiment Analysis Project**
 
 ## **Project Objective** 
-The purpose of this project is to examine how the sentiment score of my daily journal varies with different workload and duty patterns over time. By leveraging Natural Language Processing (NLP), I aim to quantify subjective meotional data to find correlations with objective work metrics.
+The purpose of this project is to examine how the sentiment score of my daily journal varies with different workload and duty patterns over time. By leveraging Natural Language Processing (NLP), I aim to quantify subjective emotional data to find correlations with objective work metrics.
 
 ### **Methods & Technologies**
 - Language: Python
@@ -58,7 +58,7 @@ To improve performance, I migrated the pipeline to **KLUE-BERT** (Korean Languag
 ## **Technical Implementation (KLUE-BERT)**
 
 ### Model Validation: Ground Truth Correlation
-To ensure the model's sentiment score was accurate, I performed a **Pearson Correlation** analysis against my manually recorded 'Overall Mood'. This validation step ensures that the mode's view of my day aligns with my evaluation of my mood. 
+To ensure the model's sentiment score was accurate, I performed a **Pearson Correlation** analysis against my manually recorded 'Overall Mood'. This validation step ensures that the model's view of my day aligns with my evaluation of my mood. 
 
 ### Sentiment Polarity Transformation
 To make the data more interpretable for visualization, I transformed the Softmax probability output [0,1] to a **Centered Polarity Score** [-1,1]. 
@@ -89,7 +89,7 @@ Restricting the data to non-zero work hours, the data only contains date, which 
 
 **Figure 3: Distribution of Sentiment Score of Days with 0 Work Hours**
 
-This distribution provides a baseline of my "rest day" state. While the mass centers on the positive side, the spread shows a noticeable tail extending into negative side. This confirms that no work does not guarantee or automatically translate to high satisfaction; rather, the events happened during the rest day depends more on the score. 
+This distribution provides a baseline of my "rest day" state. While the mass centers on the positive side, the spread shows a noticeable tail extending into negative side. This confirms that no work does not guarantee or automatically translate to high satisfaction; rather, the sentiment score depends heavily on the specific contextual events of that rest day rather than the positivity from the absence of work.
 
 #### 
 <img width="788" height="588" alt="Screenshot 2026-06-05 at 11 24 07 PM" src="https://github.com/user-attachments/assets/4ac71012-5de9-465d-af46-6ddc9869ea5c" />
