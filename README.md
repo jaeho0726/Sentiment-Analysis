@@ -55,6 +55,16 @@ To improve performance, I migrated the pipeline to **KLUE-BERT** (Korean Languag
 
 - **Subword Tokenization**: replaced 'Okt' with a subword tokenizer, effectively handling 'Out-of-Vocabulary' words and reducing the need for manual stopword filtering
 
+<img width="542" height="138" alt="image" src="https://github.com/user-attachments/assets/7419574e-d849-4928-b411-03b191c3f69a" />
+
+**[Figure 1] Discrepancy Score between Subjective Mood Score ('Overall Mood' column) and Sentiment Score Using KoNLPy library**
+
+
+<img width="562" height="137" alt="image" src="https://github.com/user-attachments/assets/32f9f7c9-d87d-411a-bea2-357747ae597f" />
+
+**[Figure 2] Discrepancy Score between Subjective Mood Score ('Overall Mood' column) and Sentiment Score Using KLUE-BERT model**
+
+
 ## **Technical Implementation (KLUE-BERT)**
 
 ### Model Validation: Ground Truth Correlation
@@ -72,14 +82,14 @@ $$Score_{Polarity} = (Score_{Softmax} - 0.5) \times 2$$
 ## **Results & Analysis** 
 <img width="987" height="587" alt="Screenshot 2026-06-05 at 11 23 24 PM" src="https://github.com/user-attachments/assets/6a059c5e-caf6-47ed-a5f4-f2430fde88bf" />
 
-**Figure 1: Mood vs Sentiment Score Discrepancy** 
+**[Figure 3] Mood vs Sentiment Score Discrepancy** 
 
 The scatter plot shows a positive correlation between the subjective mood and the sentiment score from the model, indicating the model accurately captures the directional orientation of my reflections. However, the visible variance demonstrates that a subjective mood rated as "6" can occasionally generate highly positive or mildly negative sentiment score. This occurs because the subjective mood score is often heavily anchored by recent event or a single high-impact of the day while the KLUE-BERT model reads the text composition, capturing lingusitic nuances, fatigue, or passive reflections across the entry. 
 
 #### 
 <img width="788" height="589" alt="Screenshot 2026-06-05 at 11 23 38 PM" src="https://github.com/user-attachments/assets/af53ffef-8bd6-4a5f-9728-02a2b00cd656" />
 
-**Figure 2: Hours of Work vs Sentiment Score (Exluding Days with 0 Work Hours)**
+**[Figure 4] Hours of Work vs Sentiment Score (Exluding Days with 0 Work Hours)**
 
 Restricting the data to non-zero work hours, the data only contains date, which I actually worked as some days were rest day despite being on duty status. This graph displays an excpetionally scattered distribution with weak trendline. **Working longer hours does not directly translate to negative sentiment.** This indicates a high level of resilience or psychological adjustment to the workload, where a long but productive or meaningful day can still lead to highly positive reflection.
 
@@ -87,14 +97,14 @@ Restricting the data to non-zero work hours, the data only contains date, which 
 ####
 <img width="787" height="585" alt="Screenshot 2026-06-05 at 11 29 47 PM" src="https://github.com/user-attachments/assets/503ecd4d-fc7c-4094-8c72-de2d760b7a0d" />
 
-**Figure 3: Distribution of Sentiment Score of Days with 0 Work Hours**
+**[Figure 5] Distribution of Sentiment Score of Days with 0 Work Hours**
 
 This distribution provides a baseline of my "rest day" state. While the mass centers on the positive side, the spread shows a noticeable tail extending into negative side. This confirms that no work does not guarantee or automatically translate to high satisfaction; rather, the sentiment score depends heavily on the specific contextual events of that rest day rather than the positivity from the absence of work.
 
 #### 
 <img width="788" height="588" alt="Screenshot 2026-06-05 at 11 24 07 PM" src="https://github.com/user-attachments/assets/4ac71012-5de9-465d-af46-6ddc9869ea5c" />
 
-**Figure 4: Work Intensity vs Sentiment Score**
+**[Figure 6] Work Intensity vs Sentiment Score**
 
 Similar to Figure 2, the distribution across work intensity levels (0-10) demonstrates substantial overlap. High intensity does not automatically trigger strongly negative sentiment score. This reinforces that how I contextually frame the difficulty of a challenging day in my daily journal matters far more than the objective difficulty rating itself.
 
