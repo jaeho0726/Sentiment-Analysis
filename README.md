@@ -66,6 +66,9 @@ To improve performance, I migrated the pipeline to **KLUE-BERT** (Korean Languag
 **[Figure 2] Discrepancy Score between Subjective Mood Score ('Overall Mood' column) and Sentiment Score Using KLUE-BERT model**
 
 
+Shifted the model from KoNLPy library to KLUE-BERT model to better capture complex contextual nuances in natural Korean text. This transition optimized analytical alignment, reducing the Mean Discrepancy Score against subjective mood baselines. While the initial KoNLPy model exhibited lower standard deviation of discrepancy due to highly compressed, overly conservative sentiment predictions, KLUE-BERT successfully captured the dynamic expressiveness of Korean sentences. This transition resulted in a broader distribution and an increased standard deviation of discrepancy. This increase validates that KLUE-BERT model eliminates systemic prediction flattening. 
+
+
 
 ## **Technical Implementation (KLUE-BERT)**
 
