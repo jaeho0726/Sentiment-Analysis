@@ -46,6 +46,11 @@ Originally, I built a **LSTM** using Keras. This model utilized the **Okt** morp
 
 - **Preprocessing Complexity**: required manual stopward removal and sequence padding
 
+<img width="542" height="138" alt="image" src="https://github.com/user-attachments/assets/7419574e-d849-4928-b411-03b191c3f69a" />
+
+**[Figure 1] Discrepancy Score between Subjective Mood Score ('Overall Mood' column) and Sentiment Score Using KoNLPy library**
+
+
 ### Phase 2: KLUE-BERT (current model)
 To improve performance, I migrated the pipeline to **KLUE-BERT** (Korean Language Understanding Evaluation - BERT)
 
@@ -54,10 +59,6 @@ To improve performance, I migrated the pipeline to **KLUE-BERT** (Korean Languag
 - **Transfer Learning**: KLUE-BERT is pre-trained on massive Korean corpora, allowing it to perform accurately even wit my relatively small personal dataset
 
 - **Subword Tokenization**: replaced 'Okt' with a subword tokenizer, effectively handling 'Out-of-Vocabulary' words and reducing the need for manual stopword filtering
-
-<img width="542" height="138" alt="image" src="https://github.com/user-attachments/assets/7419574e-d849-4928-b411-03b191c3f69a" />
-
-**[Figure 1] Discrepancy Score between Subjective Mood Score ('Overall Mood' column) and Sentiment Score Using KoNLPy library**
 
 
 <img width="562" height="137" alt="image" src="https://github.com/user-attachments/assets/32f9f7c9-d87d-411a-bea2-357747ae597f" />
