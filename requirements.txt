@@ -1,0 +1,17 @@
+numpy
+pandas
+matplotlib
+seaborn
+scipy
+scikit-learn
+tqdm
+
+torch
+transformers
+accelerate
+
+tensorflow
+konlpy
+
+gspread
+google-auth
