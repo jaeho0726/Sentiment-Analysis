@@ -34,7 +34,7 @@ def predict_bert_sentiment(
     device
         Torch device used for inference.
 
-    max_length : Maximum token sequence length used by the model. (int, default=128)
+    max_length : Maximum token sequence length used by the model. (int)
 
     Returns
     -------

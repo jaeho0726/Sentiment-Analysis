@@ -6,11 +6,7 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 
 
 
-def evaluate_mood_alignment(
-    data,
-    mood_column="Overall Mood",
-    sentiment_column="Sentiment Score"
-):
+def evaluate_mood_alignment(data, mood_column="Overall Mood", sentiment_column="Sentiment Score"):
     """
     Evaluate alignment between self-reported mood and
     model-generated sentiment scores.
