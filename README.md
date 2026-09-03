@@ -176,115 +176,231 @@ Positive Sentiment Probability
 
 ### Full-Reflection Sentiment Scoring
 
-## **Data Collection**
+Daily journal reflections are generally much longer than NSMC movie reviews.
 
-Each daily reflction journal was recorded through **Notion** database. Each journal is consist of two numerical data _(name, hours of work)_, three categorical data _(duty status, work intensity, and overall mood)_, and text data _(reflection)_.
-|Name|Today's Status|Hours of Work|Work Intensity|Overall Mood|Reflection|Exportation|
-|:---|:-------------|:------------|:-------------|:-----------|:---------|:----------|
-|1/24/2026|On Duty|0|0|9|...|True|
-|2/25/2026|On Duty|2.5|2|6|...|True|
-|...|...|...|...|...|...|...|
+Instead of truncating the entire reflection into a single sequence, each reflection is divided into sentences.
 
-- **Name** : date of daily reflection
-- **Today's Status** : represents today's status (military leave / temporary leave / on duty)
-- **Hours of Work** : represents how many hours I work in corresponding date
-- **Work Intensity** : represents how hard the day was from 0 - 10 with 0 being easy and 10 being intense
-- **Overall Mood** : represents how I felt overall from 0 - 10 with 0 being poor and 10 being great
-- **Reflection** : text written in Korean about my day
-- **Exportaion** : a checkbox whether the daily reflection can be exported from Notion to Google Sheets
+For each sentence:
 
-### **Data Exportation**
+1. Korean morphological analysis is performed using Okt.
+2. Stopwords are removed.
+3. The sentence is converted to the trained tokenizer sequence.
+4. The BiLSTM produces a positive sentiment probability.
+5. Sentence probabilities are combined using token-weighted averaging.
 
-The data recorded in **Notion** database is automatically exported to **Google Sheets** via **Zapier**. The automatic exportation is made when the value of 'Exportation' property is true in Notion database.
+The final probability is converted into a score between 0 and 10:
+`Sentiment Score = Weighted Positive Probability x 10`
 
-## **The Evolution of Model Architecture**
+This method allows longer reflections to contribute more information than a single truncated input.
 
-### Phase 1: LSTM with KoNLPy (Initial Baseline)
+## **2. KLUE-BERT**
 
-Originally, I built a **LSTM** using Keras. This model utilized the **Okt** morphological analyzer from the **KoNLPy** library for tokenization. While this provided a functional baseline, it faced challenges:
+The second approach uses KLUE-BERT, a Korean pretrained transformer model.
 
-- **Static Embeddings**: it struggled with the nuanced, contextual nature of personal reflections
+The model is fine-tuned for binary sentiment classification using NSMC.
 
-- **Preprocessing Complexity**: required manual stopward removal and sequence padding
+### Why KLUE-BERT?
 
-<img width="542" height="138" alt="image" src="https://github.com/user-attachments/assets/7419574e-d849-4928-b411-03b191c3f69a" />
+The KoNLPy baseline depends heavily on explicit tokenization and learned word representations.
 
-**[Figure 1] Discrepancy Score between Subjective Mood Score ('Overall Mood' column) and Sentiment Score Using KoNLPy library**
+KLUE-BERT instead uses contextual representations, allowing the meaning of a token to depend on the surrounding text.
 
-### Phase 2: KLUE-BERT (current model)
+This makes it better suited for sentences where meaning depends on context, phrasing, or combinations of words.
 
-To improve performance, I migrated the pipeline to **KLUE-BERT** (Korean Language Understanding Evaluation - BERT)
+### Long-Reflection Processing
 
-- **Why BERT?**: unlike LSTM that processes text in one direction, BERT's bidirectional attention mechanism understands the context of a word based on its surroundings
+BERT models have a maximum input sequence length.
 
-- **Transfer Learning**: KLUE-BERT is pre-trained on massive Korean corpora, allowing it to perform accurately even wit my relatively small personal dataset
+Rather than truncating journal entries, the full reflection is tokenized and split into smaller token chunks.
 
-- **Subword Tokenization**: replaced 'Okt' with a subword tokenizer, effectively handling 'Out-of-Vocabulary' words and reducing the need for manual stopword filtering
+```
+Full Reflection
+     |
+     v
+KLUE-BERT Tokenization
+     |
+     v
+Token Chunk 1
+Token Chunk 2
+Token Chunk 3
+...
+     |
+     v
+KLUE-BERT
+     |
+     v
+Positive Probability per Chunk
+     |
+     v
+Token-Weighted Average
+     |
+     v
+0-10 Sentiment Score
+```
 
-<img width="562" height="137" alt="image" src="https://github.com/user-attachments/assets/32f9f7c9-d87d-411a-bea2-357747ae597f" />
+Each chunk receives a positive sentiment probability, and the probabilities are aggregated according to the number of tokens contained in each chunk.
 
-**[Figure 2] Discrepancy Score between Subjective Mood Score ('Overall Mood' column) and Sentiment Score Using KLUE-BERT model**
+The resulting score is: `Sentiment Score = Weighted Positive Probability x 10`
 
-Shifted the model from KoNLPy library to KLUE-BERT model to better capture complex contextual nuances in natural Korean text. This transition optimized analytical alignment, reducing the Mean Discrepancy Score against subjective mood baselines. While the initial KoNLPy model exhibited lower standard deviation of discrepancy due to highly compressed, overly conservative sentiment predictions, KLUE-BERT successfully captured the dynamic expressiveness of Korean sentences. This transition resulted in a broader distribution and an increased standard deviation of discrepancy. This increase validates that KLUE-BERT model eliminates systemic prediction flattening.
+## **Model Validation**
 
-## **Technical Implementation (KLUE-BERT)**
+The main goal of the model comparison is not simply to determine which model performs better on NSMC.
 
-### Model Validation: Ground Truth Correlation
+Instead, the project asks '_Which sentiment model produces scores that align more closely with independently recorded daily mood?_'
 
-To ensure the model's sentiment score was accurate, I performed a **Pearson Correlation** analysis against my manually recorded 'Overall Mood'. This validation step ensures that the model's view of my day aligns with my evaluation of my mood.
+The generated sentiment scores are therefore compared against the user's self-recorded `Overall Mood` values.
 
-### Sentiment Polarity Transformation
+The following metrics are used:
 
-To make the data more interpretable for visualization, I transformed the Softmax probability output [0,1] to a **Centered Polarity Score** [-1,1].
+- Mean Absolute Error
+  : measures the average absolute difference between sentiment score and self-reported mood
+  (Lower values indicate closer alignment)
 
-$$Score_{Polarity} = (Score_{Softmax} - 0.5) \times 2$$
+- Root Mean Square Error
+  : measures the difference between sentiment score and self-reported mood with greater weight to large discrepancies
 
-- -1 : Strong Negative Sentiment
-- 0 : Neutral
-- 1 : Strong Positive Sentiment
+- Mean Bias
+  : `Sentiment Score` - `Overall Mood`
 
-## **Results & Analysis**
+- Pearson Correlation
+  : measures the strength of the linear relationship between sentiment score and self-reported mood.
 
-<img width="987" height="587" alt="Screenshot 2026-06-05 at 11 23 24 PM" src="https://github.com/user-attachments/assets/6a059c5e-caf6-47ed-a5f4-f2430fde88bf" />
+## **Model Comparison**
 
-**[Figure 3] Mood vs Sentiment Score Discrepancy**
+| Model     | MAE ↓     | RMSE ↓    | Mean Bias  | Pearson r ↑ |
+| --------- | --------- | --------- | ---------- | ----------- |
+| KoNLPy    | 2.029     | 2.401     | -1.518     | 0.196       |
+| KLUE-BERT | **1.459** | **1.845** | **-0.597** | **0.482**   |
 
-The scatter plot shows a positive correlation between the subjective mood and the sentiment score from the model, indicating the model accurately captures the directional orientation of my reflections. However, the visible variance demonstrates that a subjective mood rated as "6" can occasionally generate highly positive or mildly negative sentiment score. This occurs because the subjective mood score is often heavily anchored by recent event or a single high-impact of the day while the KLUE-BERT model reads the text composition, capturing lingusitic nuances, fatigue, or passive reflections across the entry.
+KLUE-BERT showed stronger alignment with the independently recorded mood scores across all four comparison metrics.
 
-####
+Relative to the KoNLPy baseline:
 
-<img width="788" height="589" alt="Screenshot 2026-06-05 at 11 23 38 PM" src="https://github.com/user-attachments/assets/af53ffef-8bd6-4a5f-9728-02a2b00cd656" />
+- MAE decreased by approximately 28%
+- RMSE decreased by approximately 23%
+- Negative prediction bias was substantially reduced
+- Pearson correlation increased from 0.196 to 0.482
 
-**[Figure 4] Hours of Work vs Sentiment Score (Exluding Days with 0 Work Hours)**
+The KoNLPy model showed a noticeable tendency to compress sentiment scores toward the lower-middle portion of the scale.
 
-Restricting the data to non-zero work hours, the data only contains date, which I actually worked as some days were rest day despite being on duty status. This graph displays an excpetionally scattered distribution with weak trendline. **Working longer hours does not directly translate to negative sentiment.** This indicates a high level of resilience or psychological adjustment to the workload, where a long but productive or meaningful day can still lead to highly positive reflection.
+KLUE-BERT produced a wider and more responsive range of sentiment scores and showed a stronger relationship with changes in self-reported mood.
 
-####
+Based on these results, KLUE-BERT was selected as the preferred sentiment representation for downstream analysis.
 
-<img width="787" height="585" alt="Screenshot 2026-06-05 at 11 29 47 PM" src="https://github.com/user-attachments/assets/503ecd4d-fc7c-4094-8c72-de2d760b7a0d" />
+## **Largest Mood-Sentiment Score Discrepancies**
 
-**[Figure 5] Distribution of Sentiment Score of Days with 0 Work Hours**
+In addition to aggregate metrics, the project examines observations with the largest differences between:
 
-This distribution provides a baseline of my "rest day" state. While the mass centers on the positive side, the spread shows a noticeable tail extending into negative side. This confirms that no work does not guarantee or automatically translate to high satisfaction; rather, the sentiment score depends heavily on the specific contextual events of that rest day rather than the positivity from the absence of work.
+_Self-Reported Mood vs Model-Generated Sentiment_
 
-####
+These cases are useful because sentiment and mood do not necessarily represent the same concept.
 
-<img width="788" height="588" alt="Screenshot 2026-06-05 at 11 24 07 PM" src="https://github.com/user-attachments/assets/4ac71012-5de9-465d-af46-6ddc9869ea5c" />
+For example, a person may assign a relatively high overall mood score while writing about one specific negative event, or may report a low mood while reflecting positively on certain parts of the day.
 
-**[Figure 6] Work Intensity vs Sentiment Score**
+Therefore, disagreement between the two measurements is treated as an analytical observation rather than automatically as a model error.
 
-Similar to Figure 2, the distribution across work intensity levels (0-10) demonstrates substantial overlap. High intensity does not automatically trigger strongly negative sentiment score. This reinforces that how I contextually frame the difficulty of a challenging day in my daily journal matters far more than the objective difficulty rating itself.
+## **Key Findings**
 
-## **Limitations & Challanges**
+1. **Transformer-based sentiment modeling aligned better with self-reported mood**
 
-- **Hierarchical Constraints**: The hardship and adversity of work and daily life differs for each level: _private_, _private first class_, _corporal_, and _sergeant_. The daily reflection sentiment analysis project started when I was a sergeant with only 6 months left until the end of the service. If this project started earlier, it could have allowed a new point of view on analysis: patters in sentiment analysis score for each level.
+   : KLUE-BERT substantially outperformed the KoNLPy/Okt baseline on all mood-alignment metrics, suggesting that contextual language representations are more effective for capturing the emotional tone of longer personal reflections in this dataset.
 
-- **Domain Gap**: The model was fin-tuned on the **Naver Movie Sentiment Corpus (NSMC)**. While being powerful, movie reviews and personal journals have different linguistic structures, which I addressed by utilizing the contextual strengths of BERT.
+2. **KoNLPy baseline showed strong downward bias**
 
-## **References**
+   : The baseline model frequently produced sentiment scores substantially below the corresponding self-reported mood score. Its mean bias of -1.518 indicates systematic underestimation relative to the reference mood scores.KLUE-BERT reduced this bias to -0.597.
 
-- [KLUE-BERT](https://www.youtube.com/watch?v=7GUoDHxN5NM)
+## **Limitations**
 
-- [NSMC Dataset](https://github.com/e9t/nsmc)
+### Domain Shift
 
-- https://www.youtube.com/watch?v=7GUoDHxN5NM
+Both models are trained using NSMC, which contains Korean movie reviews. The target dataset consists of personal daily reflections.
+
+The language patterns and emotional expressions in these two domains can differ substantially. Future work could use sentiment data that more closely resembles diaries, social writing, or personal reflections.
+
+### Small Personal Dataset
+
+The hardship and adversity of work and daily life differs for each level: _private_, _private first class_, _corporal_, and _sergeant_. The daily reflection sentiment analysis project started when I was a sergeant with only 6 months left until the end of the service. If this project started earlier, it could have allowed a new point of view on analysis: patters in sentiment analysis score for each level. Also, patterns found in this project therefore should not be generalized to broader populations.
+
+## Privacy
+
+The project is built using private personal journal data, which includes military information.
+
+To protect sensitive information:
+
+- Raw journal reflections are not included in this repository.
+- Private Google Sheets data is not included.
+- Saved models stored in private Google Drive directories are not included.
+- The repository focuses on the processing, modeling, evaluation, and analysis pipeline.
+
+This allows the technical workflow to remain publicly accessible without exposing the original journal content.
+
+## **Technologies**
+
+### Data Analysis
+
+- Python
+- pandas
+- NumPy
+- SciPy
+- scikit-learn
+
+### Machine Learning / NLP
+
+- PyTorch
+- Hugging Face Transformers
+- KLUE-BERT
+- TensorFlow
+- Keras
+- Bidirectional LSTM
+- KoNLPy
+- Okt
+
+### Visualization
+
+- Matplotlib
+- Seaborn
+
+### Data Pipeline
+
+- Notion
+- Zapier
+- Google Sheets
+- gspread
+- Google Colab
+
+## **Future Improvements**
+
+This project can improve in the future by:
+
+- collecting a longer longitudinal dataset in different settings (non military life)
+- exploring temporal mood and sentiment patterns
+- investigating mood-sentiment disagreement in greater detail
+- comparing additional Korean pretrained language models
+
+## **Takeaway**
+
+This project developed from a simple personal journaling habit into an end-to-end NLP and personal data analysis workflow.
+
+```
+Daily Data Collection
+        |
+        v
+Automated Data Pipeline
+        |
+        v
+Structured + Unstructured Data
+        |
+        v
+KoNLPy/Okt + BiLSTM Baseline
+        |
+        v
+KLUE-BERT
+        |
+        v
+Quantitative Model Validation
+        |
+        v
+Personal Data Analysis
+```
+
+The project demonstrates how structured daily measurements and unstructured Korean text can be combined into a reproducible machine-learning pipeline.
